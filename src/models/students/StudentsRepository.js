@@ -1,32 +1,76 @@
-export class StudentsRepository {
+import db from "../../database/index.js";
+import { v4 as uuidv4 } from "uuid";
+
+export default class StudentsRepository {
   constructor() {
-    this.students = [];
+    this.db = db;
   }
 
-  getStudents() {
-    return this.students;
+  async getStudents() {
+    try {
+      const allStudents = await this.db.manyOrNone("SELECT * FROM students");
+      return allStudents;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  getStudentById(id) {
-    return this.students.find((student) => student.id === id);
+  async getStudentById(id) {
+    try {
+      const student = await this.db.oneOrNone("SELECT * FROM students WHERE id = $1", id);
+      return student;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  addStudent(student) {
-    this.students.push(student);
+  async getStudentByName(name) {
+    try {
+      const student = await this.db.oneOrNone("SELECT * FROM students WHERE name = $1", name);
+      return student;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  updateStudent(id, name, age) {
-    const student = this.getStudentById(id);
+  async createStudent(student) {
+    try {
+      const { name, age } = student;
+      const id = uuidv4();
+      await this.db.none("INSERT INTO students (id, name, age) VALUES ($1, $2, $3)", [id, name, age]);
+      return { id, name, age };
+    } catch (error) {
+      throw error;
+    }
+  }
 
-    if (student) {
+  async updateStudent(id, name, age) {
+    try {
+      const student = await this.getStudentById(id);
+
+      if (!student) {
+        return null;
+      }
+
       student.name = name;
       student.age = age;
-    }
 
-    return student;
+      const updatedStudent = await this.db.one(
+        "UPDATE students SET name = $1, age = $2 WHERE id = $3 RETURNING *",
+        [name, age, id]
+      );
+
+      return updatedStudent;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  deleteStudent(id) {
-    this.students = this.students.filter((student) => student.id !== id);
+  async deleteStudent(id) {
+    try {
+      await this.db.none("DELETE FROM students WHERE id = $1", id);
+    } catch (error) {
+      throw error;
+    }
   }
 }
