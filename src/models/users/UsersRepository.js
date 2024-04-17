@@ -12,7 +12,7 @@ export default class UsersRepository {
       const allUsers = await this.db.manyOrNone("SELECT * FROM users");
       return allUsers;
      } catch (error){
-      console.error("cocozao", error);
+      // console.error("cocozao", error);
       throw error;
      }
   }
@@ -22,7 +22,7 @@ async getUserById(id) {
     const user = await this.db.oneOrNone("SELECT * FROM users WHERE id = $1", id);
     return user
     } catch (error){
-      console.error(`cocozao do id ${id}`, error);
+      // console.error(`cocozao do id ${id}`, error);
       throw error;
     }
   }
@@ -32,7 +32,7 @@ async getUserById(id) {
       const user = await this.db.oneOrNone("SELECT * FROM users WHERE email = $1", email);
       return user
       } catch (error){
-        console.error(`cocozao do email ${email}`, error);
+        // console.error(`cocozao do email ${email}`, error);
         throw error;
       }
   }
@@ -42,7 +42,7 @@ async getUserById(id) {
       await this.db.none("INSERT INTO users (id, name, email, password) VALUES ($1, $2, $3, $4)", [user.id, user.name, user.email, user.password]);
     return user;
     } catch (error) {
-      console.error("cocozao nao criou usuario: ", error);
+      // console.error("cocozao nao criou usuario: ", error);
       throw error
     }
   }
@@ -65,7 +65,7 @@ async getUserById(id) {
 
     return user;
    } catch (error) {
-  console.error(`cocozao update do id ${id}`, error);
+  // console.error(`cocozao update do id ${id}`, error);
   throw error
    }
   }
@@ -74,7 +74,7 @@ async getUserById(id) {
    try {
     await this.db.none("DELETE FROM users WHERE id = $1", id);
    } catch (error) {
-    console.error(`cocozao delete do id ${id}`, error);
+    // console.error(`cocozao delete do id ${id}`, error);
     throw error
    }
   }
